@@ -16,10 +16,12 @@ Das Dokument behandelt:
 
 Alle Aussagen sind gegen die offizielle Microsoft-Dokumentation validiert.
 
-## Dokument
+## Dokumente
 
 - [S2D über Brandabschnitte](docs/s2d-brandabschnitte.md)
   — Vollständige technische Bewertung
+- [S2D Setup-Leitfaden](docs/s2d-setup-guide.md)
+  — Hardware, Software und Deployment eines S2D-Clusters
 
 ## Zielgruppe
 
