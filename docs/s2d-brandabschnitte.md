@@ -51,6 +51,8 @@ Storage Spaces Direct ist eine [Software-defined Storage (SDS)](glossar.md#sds-s
 
 *Quelle: Microsoft Learn — Storage Spaces Direct Hardware Requirements [2]*
 
+> **Hinweis zur Netzwerkbandbreite**: Die oben genannten 10 GbE bzw. 25 GbE sind Microsofts **Mindestanforderungen**. Für Produktionsumgebungen sind diese Werte in der Regel nicht ausreichend — Replikations-Overhead (Two-/Three-Way Mirror), Re-Sync nach Knotenausfällen und NVMe-Durchsatz erfordern deutlich mehr Bandbreite. Details und konkrete Empfehlungen siehe [Setup-Leitfaden — Netzwerk-Mindestanforderungen](s2d-setup-guide.md#mindestanforderungen).
+
 # Fault Domain Awareness — Site-Unterstützung
 
 ## Konzept der Fault Domains

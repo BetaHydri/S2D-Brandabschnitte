@@ -242,6 +242,28 @@ Für einen S2D-Cluster werden typischerweise mehrere logische Netzwerke konfigur
 | **Live Migration** | VM-Live-Migration zwischen Knoten | 10–25 GbE |
 | **VM-Netzwerk** | VM-Traffic (Tenant-Netzwerk) | 10–25 GbE |
 
+### Dedizierte NICs — Physische Trennung der Traffic-Typen
+
+In Produktionsumgebungen sollten die verschiedenen Netzwerk-Traffic-Typen über **dedizierte physische Netzwerkkarten** getrennt werden. Die gemeinsame Nutzung von NICs für mehrere Traffic-Typen führt zu Bandbreitenkonflikten, unvorhersehbaren Latenzen und erschwert die Fehlerdiagnose.
+
+| Traffic-Typ | Dedizierte NICs | Begründung |
+|---|---|---|
+| **Management** | 1–2× 1/10 GbE | Isoliert Verwaltungs- und Heartbeat-Traffic von performancekritischen Pfaden. Bei einem Storage-Re-Sync bleibt der Cluster-Heartbeat stabil und löst kein unbeabsichtigtes Node-Eviction aus |
+| **Storage (East-West)** | 2× 25/100 GbE (RDMA) | S2D-Replikation, Re-Sync und [CSV](glossar.md#csv-cluster-shared-volumes)-I/O erfordern garantierte, latenzarme Bandbreite. RDMA funktioniert optimal, wenn der Adapter nicht durch anderen Traffic belastet wird |
+| **CSV-Redirect** | Über Storage-NICs oder separate NICs | [CSV-Redirect-I/O](glossar.md#csv-redirected-io) tritt auf, wenn ein Knoten auf ein Volume zugreift, dessen Owner ein anderer Knoten ist. Dieser Traffic konkurriert direkt mit Storage-Replikation — bei hoher Last sollten separate NICs erwogen werden |
+| **Live Migration** | 1–2× 10/25 GbE | Live Migration kann mehrere GB/s pro VM generieren. Ohne eigene NICs verdrängt eine Migration den Storage-Traffic und verursacht VM-Stalls |
+| **VM-Netzwerk (Tenant)** | 2× 10/25 GbE (via SET vSwitch) | Nord-Süd-Traffic der VMs sollte vom East-West-Storage-Traffic vollständig getrennt sein |
+
+> **Best Practice — Minimale NIC-Bestückung pro Knoten (Produktion)**:
+>
+> | NIC-Paar | Verwendung |
+> |---|---|
+> | 2× 1/10 GbE | Management + Cluster-Heartbeat |
+> | 2× 25/100 GbE (RDMA) | Storage (S2D, CSV) |
+> | 2× 10/25 GbE | VM-Netzwerk + Live Migration (SET vSwitch) |
+>
+> Damit verfügt jeder Knoten über mindestens **6 physische Netzwerkports**. Die Paare bieten Redundanz bei Adapter- oder Switch-Ausfall. Management-NICs sollten **nicht** Teil des SET vSwitch sein, damit die Verwaltung auch bei einem vSwitch-Problem erreichbar bleibt.
+
 ### [VLAN](glossar.md#vlan-virtual-local-area-network)-Trennung
 
 | Netzwerk | VLAN | Begründung |
