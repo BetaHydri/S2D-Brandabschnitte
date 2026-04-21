@@ -249,7 +249,7 @@ Set-ClusterQuorum -Cluster "S2DCluster" `
 |  +------+ +------+ +------+|=========|+------+ +------+ +------+ |
 +============================+         +============================+
               |                                       |
-              |          Brandabschnitt C              |
+              |          Brandabschnitt C             |
               |    +---------------------------+      |
               +--->| File Share Witness         |<----+
                    | (\\FileServer03\Witness$)  |
