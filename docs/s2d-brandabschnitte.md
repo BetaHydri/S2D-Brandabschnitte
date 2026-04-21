@@ -290,6 +290,10 @@ Die folgende Tabelle dokumentiert die Validierung der technischen Aussagen:
 | File Share Witness als on-premises Option | Ja | Deploy a Quorum Witness [6] |
 | Fault Domains vor S2D-Aktivierung konfigurieren | Ja | Fault Domain Awareness: Usage [3] |
 | Pool Quorum benötigt 50 % + 1 der Laufwerke | Ja | Cluster and Pool Quorum [5] |
+| SMB-Verschlüsselung für East-West-Traffic (CSV/SBL) ab WS2022 | Ja | SMB Security Enhancements [7] |
+| SMB Direct + Encryption kompatibel ab WS2022 | Ja | SMB Security Enhancements [7] |
+| SMB 1.0 Deaktivierung empfohlen | Ja | SMB Security Enhancements [7] |
+| Storage QoS für IOPS-Management pro VM | Ja | Storage Quality of Service [8] |
 
 # Empfehlungen
 
@@ -307,6 +311,13 @@ Die folgende Tabelle dokumentiert die Validierung der technischen Aussagen:
 | 8 | Three-way Mirror als Resilienz-Typ gewählt | Offen |
 | 9 | Cluster Validation Test bestanden | Offen |
 | 10 | Failover-Test: Ausfall eines Brandabschnitts simuliert | Offen |
+| 11 | SMB-Verschlüsselung für East-West-Traffic aktiviert (ab WS2022) | Offen |
+| 12 | SMB 1.0 auf allen Knoten deaktiviert | Offen |
+| 13 | SMB Signing oder SMB-Verschlüsselung erzwungen | Offen |
+| 14 | BitLocker auf Boot- und CSV-Volumes aktiviert (Encryption at Rest) | Offen |
+| 15 | Storage QoS Policies für IO-intensive VMs konfiguriert | Offen |
+| 16 | CSV In-Memory Read Cache konfiguriert (bei read-intensiven Workloads) | Offen |
+| 17 | Windows-Firewall auf allen Knoten aktiviert und gehärtet | Offen |
 
 ## Risikobewertung
 
@@ -317,6 +328,8 @@ Die folgende Tabelle dokumentiert die Validierung der technischen Aussagen:
 | Ausfall eines kompletten Brandabschnitts (3 Knoten) | Niedrig | Kritisch — Volumes gehen möglicherweise offline | Witness an drittem Standort; schneller Wiederaufbau |
 | File Share Witness nicht erreichbar | Niedrig | Mittel — bei zusätzlichem Knotenausfall kein Quorum | Hochverfügbaren Dateiserver verwenden |
 | Latenz-Anstieg zwischen Brandabschnitten | Mittel | Mittel — Performance-Degradation | Monitoring; dedizierte Storage-NICs |
+| Unverschlüsselter Storage-Traffic über Brandschotts | Mittel | Hoch — Daten im Klartext über physische Grenzen | SMB-Verschlüsselung aktivieren (ab WS2022 RDMA-kompatibel) [7] |
+| Noisy-Neighbor bei IO-intensiven VMs | Hoch | Mittel — Performance-Degradation anderer VMs | Storage QoS Policies mit IOPS-Limits konfigurieren [8] |
 
 # Quellenverzeichnis
 
@@ -343,3 +356,11 @@ Die folgende Tabelle dokumentiert die Validierung der technischen Aussagen:
 6. **Microsoft Learn** — „Deploy a quorum witness"\
    <https://learn.microsoft.com/en-us/windows-server/failover-clustering/deploy-quorum-witness>\
    Abgerufen: 20. April 2026
+
+7. **Microsoft Learn** — „SMB security enhancements"\
+   <https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-security>\
+   Abgerufen: 21. April 2026
+
+8. **Microsoft Learn** — „Storage Quality of Service"\
+   <https://learn.microsoft.com/en-us/windows-server/storage/storage-qos/storage-qos-overview>\
+   Abgerufen: 21. April 2026

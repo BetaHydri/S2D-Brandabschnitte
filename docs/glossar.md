@@ -370,6 +370,43 @@ Interner Kommunikationskanal von S2D, über den die Cluster-Knoten auf die Laufw
 
 ---
 
+## Sicherheit und Datenschutz
+
+### SMB-Verschlüsselung
+
+End-to-End-Verschlüsselung des SMB-Traffics (Data-in-Transit). Ab Windows Server 2022 unterstützt SMB 3.1.1 die Verschlüsselung des gesamten Cluster-internen Storage-Traffics — einschließlich CSV-I/O und Storage Bus Layer (SBL). Schützt East-West-Kommunikation zwischen Cluster-Knoten. Ab WS2022 ist SMB Encryption **kompatibel mit RDMA/SMB Direct** (Daten werden vor dem RDMA-Placement verschlüsselt). Unterstützte Cipher: AES-128-GCM, AES-128-CCM (SMB 3.0), AES-256-GCM, AES-256-CCM (SMB 3.1.1, ab WS2022).
+
+### SMB Signing
+
+Integritätsschutz für SMB-Pakete. Stellt sicher, dass Daten während der Übertragung nicht manipuliert wurden. Ab Windows Server 2022 wird **AES-128-GMAC** für performantes Signing verwendet. Bei aktivierter SMB-Verschlüsselung wird Signing automatisch mit abgedeckt.
+
+### BitLocker (Encryption at Rest)
+
+Verschlüsselung ruhender Daten auf physischen Laufwerken. SMB-Verschlüsselung schützt nur Data-in-Transit — für Schutz der Daten auf den Laufwerken (Data-at-Rest) wird BitLocker Drive Encryption eingesetzt. Unterstützt CSV-Volumes in S2D-Clustern und nutzt Hardware-AES-Beschleunigung moderner Server-CPUs.
+
+### CSV Redirected IO
+
+I/O-Modus, bei dem ein Cluster-Knoten auf ein CSV-Volume zugreift, dessen Ownership bei einem anderen Knoten liegt. Der I/O wird über das Storage-Netzwerk an den Owner-Knoten umgeleitet (redirected). Dieser Traffic konkurriert mit der S2D-Replikation und kann bei hoher Last die Storage-Latenz erhöhen.
+
+### CSV In-Memory Read Cache
+
+Block-Level-Lese-Cache im Systemspeicher (RAM) für ungepufferte Leseoperationen auf CSV-Volumes. Ergänzt den S2D Storage Bus Cache (NVMe/SSD) auf Dateisystem-Ebene. Besonders effektiv für read-intensive Workloads (VDI, File Server). Konfigurierbar über `BlockCacheSize` (Cluster-Eigenschaft).
+
+---
+
+## Performance und IO-Management
+
+### Storage QoS (Quality of Service)
+
+Zentrale Überwachung und Steuerung der Storage-Performance auf VM-/VHD-Ebene. Ermöglicht IOPS-Reservierung (**MinimumIops**) und -Limitierung (**MaximumIops**) pro VM oder VHD. Verhindert „Noisy Neighbor"-Probleme, bei denen eine einzelne VM die gesamte Storage-Bandbreite monopolisiert. Zwei Policy-Typen:
+
+- **Dedicated**: Jede VM/VHD bekommt eigene Min/Max-IOPS-Werte
+- **Aggregated**: Alle zugewiesenen VMs teilen sich das IOPS-Budget
+
+Wird bei S2D mit Cluster Shared Volumes automatisch aktiviert. Besonders wichtig für IO-intensive Workloads (SQL Server, OLTP, VDI).
+
+---
+
 ## Infrastruktur und Brandschutz
 
 ### Brandabschnitt

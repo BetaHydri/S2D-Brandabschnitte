@@ -645,6 +645,187 @@ Get-NetAdapter -Name "vEthernet (Storage*)" |
 | Fault Domains | `Get-ClusterFaultDomain` |
 | Health Faults | `Get-HealthFault` |
 
+# Sicherheitshärtung
+
+## SMB-Verschlüsselung (Data-in-Transit)
+
+Ab Windows Server 2022 unterstützt SMB 3.1.1 die Verschlüsselung des **gesamten Cluster-internen Storage-Traffics** — einschließlich [CSV](glossar.md#csv-cluster-shared-volumes)-I/O und Storage Bus Layer (SBL). Diese Verschlüsselung schützt die East-West-Kommunikation zwischen den Knoten und ist besonders relevant, wenn der Storage-Traffic physische Brandschottdurchführungen passiert [10].
+
+> **Wichtig**: Vor Windows Server 2022 deaktivierte SMB-Verschlüsselung die RDMA-Beschleunigung (SMB Direct). Ab **Windows Server 2022** funktioniert SMB Encryption **mit** RDMA/SMB Direct — die Daten werden vor dem RDMA-Placement verschlüsselt. Der Performance-Overhead ist gering (AES-128-GCM/AES-256-GCM) [10].
+
+### Cluster-weite SMB-Verschlüsselung aktivieren
+
+```powershell
+# SMB-Verschlüsselung auf dem gesamten Server aktivieren
+Invoke-Command -ComputerName Node01,Node02,Node03,Node04,Node05,Node06 -ScriptBlock {
+    Set-SmbServerConfiguration -EncryptData $true -Force
+}
+
+# Unverschlüsselten Zugriff ablehnen (empfohlen)
+Invoke-Command -ComputerName Node01,Node02,Node03,Node04,Node05,Node06 -ScriptBlock {
+    Set-SmbServerConfiguration -RejectUnencryptedAccess $true -Force
+}
+```
+
+### Verschlüsselungsstatus prüfen
+
+```powershell
+# SMB-Verbindungen und Verschlüsselungsstatus prüfen
+Get-SmbConnection | Select-Object ServerName, ShareName, Dialect, Encrypted, RdmaTransport
+```
+
+## SMB Signing (Datenintegrität)
+
+SMB Signing schützt gegen Manipulation des Storage-Traffics (Integrity Protection). Ab Windows Server 2022 wird **AES-128-GMAC** für performantes Signing verwendet [10].
+
+```powershell
+# SMB Signing erzwingen (auf allen Knoten)
+Invoke-Command -ComputerName Node01,Node02,Node03,Node04,Node05,Node06 -ScriptBlock {
+    Set-SmbServerConfiguration -RequireSecuritySignature $true -Force
+}
+```
+
+> **Hinweis**: Bei aktivierter SMB-Verschlüsselung wird Signing automatisch mit abgedeckt (AES-CMAC/AES-GMAC wird als Teil der Encryption angewendet). Separates Signing ist daher nur relevant, wenn Verschlüsselung nicht aktiviert ist [10].
+
+## SMB 1.0 deaktivieren
+
+SMB 1.0 ist ein veraltetes Protokoll ohne moderne Sicherheitsfeatures. Die Preauthentication Integrity von SMB 3.1.1 schützt **nicht** vor einem Downgrade auf SMB 1.0. Microsoft empfiehlt dringend die Deaktivierung [10].
+
+```powershell
+# SMB 1.0 auf allen Knoten deaktivieren
+Invoke-Command -ComputerName Node01,Node02,Node03,Node04,Node05,Node06 -ScriptBlock {
+    Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -NoRestart
+}
+
+# Prüfen, ob SMB 1.0 deaktiviert ist
+Invoke-Command -ComputerName Node01,Node02,Node03,Node04,Node05,Node06 -ScriptBlock {
+    Get-WindowsOptionalFeature -Online -FeatureName SMB1Protocol |
+        Select-Object FeatureName, State
+}
+```
+
+## BitLocker — Verschlüsselung at Rest
+
+[SMB-Verschlüsselung](glossar.md#smb-verschlüsselung) schützt Daten **während der Übertragung** (in-transit), deckt aber keine Daten auf den physischen Laufwerken ab (at-rest). Für Schutz ruhender Daten wird **BitLocker Drive Encryption** auf den S2D-Datenlaufwerken empfohlen [10].
+
+| Aspekt | Empfehlung |
+|---|---|
+| Boot-Laufwerke | BitLocker mit TPM-Schutz |
+| S2D-Datenlaufwerke (CSV) | BitLocker auf CSV-Volumes aktivieren |
+| Schlüsselverwaltung | Active Directory-basierte Schlüsselsicherung oder MBAM |
+| Performance-Overhead | Gering bei Hardware-AES-Unterstützung (alle modernen Server-CPUs) |
+
+```powershell
+# BitLocker auf einem CSV-Volume aktivieren (Beispiel)
+Enable-BitLocker -MountPoint "C:\ClusterStorage\Volume1" `
+    -EncryptionMethod XtsAes256 `
+    -RecoveryPasswordProtector
+
+# BitLocker-Status aller Volumes prüfen
+Get-BitLockerVolume | Select-Object MountPoint, VolumeStatus, EncryptionMethod, ProtectionStatus
+```
+
+> **Hinweis**: BitLocker auf CSV-Volumes erfordert die Aktivierung über den Cluster-Koordinator-Knoten (Owner-Node des Volumes). Nach Aktivierung wird die Verschlüsselung transparent für alle Knoten angewendet.
+
+## Windows-Firewall — Netzwerk-Härtung
+
+Die Windows-Firewall sollte auf allen S2D-Knoten **aktiviert** bleiben. Folgende Ports und Protokolle werden für den S2D-Betrieb benötigt:
+
+| Port / Protokoll | Dienst | Richtung |
+|---|---|---|
+| **TCP 445** | SMB (Storage-Traffic, CSV, Live Migration) | Eingehend + Ausgehend |
+| **TCP 5985** | WinRM / PowerShell Remoting (HTTP) | Eingehend |
+| **TCP 5986** | WinRM / PowerShell Remoting (HTTPS) | Eingehend |
+| **UDP 3343** | Cluster-Netzwerk-Treiber | Eingehend + Ausgehend |
+| **TCP 135** | RPC Endpoint Mapper | Eingehend |
+| **TCP 49152–65535** | RPC Dynamic Ports | Eingehend |
+| **ICMP** | Cluster-Heartbeat | Eingehend + Ausgehend |
+
+```powershell
+# Firewall-Regeln für Failover Clustering prüfen
+Get-NetFirewallRule -Group "Failover Clusters" |
+    Select-Object Name, Enabled, Direction, Action |
+    Format-Table -AutoSize
+
+# SMB-Firewall-Regeln prüfen
+Get-NetFirewallRule -Group "File and Printer Sharing" |
+    Where-Object { $_.Enabled -eq 'True' } |
+    Select-Object Name, Direction, Action
+```
+
+> **Best Practice**: Nicht benötigte eingehende Firewall-Regeln deaktivieren. Insbesondere bei brandabschnittübergreifendem Betrieb sollte der Traffic auf den Storage-NICs auf die erforderlichen Ports beschränkt werden. Management-NICs sollten nur die Verwaltungsports (RDP 3389, WinRM 5985/5986) zulassen.
+
+# Performance-Optimierung für IO-intensive Workloads
+
+## Storage QoS (Quality of Service)
+
+[Storage QoS](glossar.md#storage-qos-quality-of-service) ermöglicht die zentrale Überwachung und Steuerung der Storage-Performance auf VM-Ebene. Bei IO-intensiven Workloads (SQL Server, OLTP, VDI) ist Storage QoS essenziell, um **„Noisy Neighbor"-Probleme** zu verhindern und IOPS-Garantien pro VM durchzusetzen [11].
+
+Storage QoS wird bei S2D mit Cluster Shared Volumes **automatisch aktiviert** — es muss lediglich die Policy-Konfiguration vorgenommen werden [11].
+
+### Storage QoS Policies erstellen
+
+```powershell
+# Dedizierte Policy: Jede VM bekommt eigene IOPS-Limits
+New-StorageQosPolicy -Name "SQL-Production" `
+    -PolicyType Dedicated `
+    -MinimumIops 5000 `
+    -MaximumIops 20000
+
+# Aggregierte Policy: Alle zugewiesenen VMs teilen sich das Budget
+New-StorageQosPolicy -Name "VDI-Pool" `
+    -PolicyType Aggregated `
+    -MinimumIops 1000 `
+    -MaximumIops 10000
+
+# Policy auf VM-Festplatten anwenden
+$policyId = (Get-StorageQosPolicy -Name "SQL-Production").PolicyId
+Get-VM -Name "SQL01" | Get-VMHardDiskDrive |
+    Set-VMHardDiskDrive -QoSPolicyID $policyId
+```
+
+### Storage QoS überwachen
+
+```powershell
+# Alle Flows mit IOPS und Latenz anzeigen
+Get-StorageQosFlow | Sort-Object StorageNodeIOPS -Descending |
+    Format-Table InitiatorName, StorageNodeIOPS, InitiatorLatency,
+                 MinimumIops, MaximumIops, Status -AutoSize
+
+# Flows mit unzureichendem Durchsatz identifizieren
+Get-StorageQosFlow -Status InsufficientThroughput
+
+# Volume-Performance anzeigen
+Get-StorageQosVolume | Format-List IOPS, Latency, Reservation, Limit, Status
+```
+
+| Policy-Typ | Verhalten | Einsatz |
+|---|---|---|
+| **Dedicated** | Jede VM/VHD bekommt eigene Min/Max-IOPS | Produktions-VMs mit SLA |
+| **Aggregated** | Alle zugewiesenen VMs teilen Min/Max | VDI-Pools, Entwicklungsumgebungen |
+
+## CSV In-Memory Read Cache
+
+Der **CSV In-Memory Read Cache** nutzt Systemspeicher (RAM) als Block-Level-Lese-Cache für ungepufferte Leseoperationen. Dies verbessert die Performance bei IO-intensiven Workloads erheblich, insbesondere bei Hyper-V und Scale-Out File Server [4].
+
+```powershell
+# CSV-Cache aktivieren (Beispiel: 2 GB pro Server)
+$ClusterName = "S2DCluster"
+(Get-Cluster $ClusterName).BlockCacheSize = 2048
+
+# Aktuellen Cache-Status prüfen
+(Get-Cluster $ClusterName).BlockCacheSize
+```
+
+| Aspekt | Empfehlung |
+|---|---|
+| Größe | 1–4 GB pro Server (abhängig vom verfügbaren RAM) |
+| Workload-Typ | Besonders effektiv für read-intensive Workloads (VDI, File Server) |
+| Trade-off | Reduziert den für VMs verfügbaren RAM — Balance zwischen Cache- und VM-Bedarf finden |
+| Aktivierung | Sofort wirksam, kein Neustart erforderlich |
+
+> **Hinweis**: Der CSV-Cache ersetzt nicht den S2D Storage Bus Cache (NVMe/SSD als Cache-Tier), sondern ergänzt ihn. Der Storage Bus Cache arbeitet auf Blockgeräte-Ebene, der CSV-Cache auf Dateisystem-Ebene [4].
+
 # Häufige Fehler und Troubleshooting
 
 ## Häufige Fehler beim Setup
@@ -736,3 +917,11 @@ Get-SmbMultichannelConnection
 9. **Microsoft Learn** — „Deploy a quorum witness"\
    <https://learn.microsoft.com/en-us/windows-server/failover-clustering/deploy-quorum-witness>\
    Abgerufen: 20. April 2026
+
+10. **Microsoft Learn** — „SMB security enhancements"\
+    <https://learn.microsoft.com/en-us/windows-server/storage/file-server/smb-security>\
+    Abgerufen: 21. April 2026
+
+11. **Microsoft Learn** — „Storage Quality of Service"\
+    <https://learn.microsoft.com/en-us/windows-server/storage/storage-qos/storage-qos-overview>\
+    Abgerufen: 21. April 2026
