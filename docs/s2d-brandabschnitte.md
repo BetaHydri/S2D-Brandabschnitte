@@ -238,33 +238,37 @@ Set-ClusterQuorum -Cluster "S2DCluster" `
 ## Physische Topologie
 
 ```mermaid
-graph LR
-    subgraph BA[" "]
-        direction TB
-        BA_T["Brandabschnitt A"]:::title
-        N1["Node01<br/>SSD · HDD"]:::node
-        N2["Node02<br/>SSD · HDD"]:::node
-        N3["Node03<br/>SSD · HDD"]:::node
-        BA_T ~~~ N1 & N2 & N3
-    end
+graph TB
+    subgraph TOP[" "]
+        direction LR
+        subgraph BA[" "]
+            direction TB
+            BA_T["Brandabschnitt A"]:::title
+            N1["Node01<br/>SSD · HDD"]:::node
+            N2["Node02<br/>SSD · HDD"]:::node
+            N3["Node03<br/>SSD · HDD"]:::node
+            BA_T ~~~ N1 & N2 & N3
+        end
 
-    subgraph BB[" "]
-        direction TB
-        BB_T["Brandabschnitt B"]:::title
-        N4["Node04<br/>SSD · HDD"]:::node
-        N5["Node05<br/>SSD · HDD"]:::node
-        N6["Node06<br/>SSD · HDD"]:::node
-        BB_T ~~~ N4 & N5 & N6
+        subgraph BB[" "]
+            direction TB
+            BB_T["Brandabschnitt B"]:::title
+            N4["Node04<br/>SSD · HDD"]:::node
+            N5["Node05<br/>SSD · HDD"]:::node
+            N6["Node06<br/>SSD · HDD"]:::node
+            BB_T ~~~ N4 & N5 & N6
+        end
+
+        BA <==" 25 GbE RDMA<br/>RTT unter 1 ms<br/>Link 1 + Link 2 "==> BB
     end
 
     subgraph BC[" "]
-        direction TB
+        direction LR
         BC_T["Brandabschnitt C"]:::titleW
         FSW[("File Share Witness<br/>FileServer03")]:::witness
         BC_T ~~~ FSW
     end
 
-    BA <==" 25 GbE RDMA<br/>RTT unter 1 ms<br/>Link 1 + Link 2 "==> BB
     BA -." Quorum ".-> FSW
     BB -." Quorum ".-> FSW
 
@@ -272,6 +276,7 @@ graph LR
     classDef titleW fill:#8b6914,stroke:#8b6914,color:#fff,font-weight:bold
     classDef node fill:#3a3a3a,stroke:#888,color:#fff
     classDef witness fill:#3a3a3a,stroke:#8b6914,color:#fff
+    style TOP fill:none,stroke:none
     style BA fill:none,stroke:#2d6a9f,stroke-width:2px,stroke-dasharray:5 5
     style BB fill:none,stroke:#2d6a9f,stroke-width:2px,stroke-dasharray:5 5
     style BC fill:none,stroke:#8b6914,stroke-width:2px,stroke-dasharray:5 5
