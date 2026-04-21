@@ -237,23 +237,33 @@ Set-ClusterQuorum -Cluster "S2DCluster" `
 
 ## Physische Topologie
 
-```
-+============================+         +============================+
-|     Brandabschnitt A       |         |     Brandabschnitt B       |
-|                            |  <1 ms  |                            |
-|  +------+ +------+ +------+|  25Gbps |+------+ +------+ +------+ |
-|  |Node01| |Node02| |Node03||=========||Node04| |Node05| |Node06| |
-|  |      | |      | |      ||  RDMA   ||      | |      | |      | |
-|  | SSD  | | SSD  | | SSD  ||  Link 1 || SSD  | | SSD  | | SSD  | |
-|  | HDD  | | HDD  | | HDD  ||  Link 2 || HDD  | | HDD  | | HDD  | |
-|  +------+ +------+ +------+|=========|+------+ +------+ +------+ |
-+============================+         +============================+
-              |                                       |
-              |          Brandabschnitt C              |
-              |    +---------------------------+      |
-              +--->| File Share Witness         |<----+
-                   | (\\FileServer03\Witness$)  |
-                   +---------------------------+
+```mermaid
+graph TB
+    subgraph BA["Brandabschnitt A"]
+        direction LR
+        N1["Node01<br/>SSD · HDD"]
+        N2["Node02<br/>SSD · HDD"]
+        N3["Node03<br/>SSD · HDD"]
+    end
+
+    subgraph BB["Brandabschnitt B"]
+        direction LR
+        N4["Node04<br/>SSD · HDD"]
+        N5["Node05<br/>SSD · HDD"]
+        N6["Node06<br/>SSD · HDD"]
+    end
+
+    subgraph BC["Brandabschnitt C"]
+        FSW[("File Share Witness<br/>FileServer03")]
+    end
+
+    BA <==" 25 GbE RDMA · RTT unter 1 ms<br/>Link 1 + Link 2 "==> BB
+    BA -." Quorum ".-> FSW
+    BB -." Quorum ".-> FSW
+
+    style BA fill:#e8f4fd,stroke:#1a73e8,stroke-width:2px
+    style BB fill:#e8f4fd,stroke:#1a73e8,stroke-width:2px
+    style BC fill:#fef7e0,stroke:#f9a825,stroke-width:2px
 ```
 
 ## Logische Komponenten
