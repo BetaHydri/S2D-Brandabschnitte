@@ -130,6 +130,23 @@ Wenn **zwei unterschiedliche Laufwerkstypen** vorhanden sind, verwendet S2D auto
 
 *Quelle: Microsoft Learn — Storage Spaces Direct Hardware Requirements [2]*
 
+> **Produktionswarnung — Bandbreite realistisch dimensionieren**: Die oben genannten 10 GbE bzw. 25 GbE sind Microsofts **absolute Mindestanforderungen**. In Produktionsumgebungen reichen diese Bandbreiten in der Regel **nicht** aus. S2D erzeugt erheblichen Storage-Traffic: Jeder Schreibvorgang wird je nach Resilienz-Level (Two-Way Mirror, Three-Way Mirror, Mirror-Accelerated Parity) **zwei- bis dreifach repliziert**. Hinzu kommen Re-Sync-Operationen nach Knotenausfällen oder Wartungsfenstern, die das gesamte verfügbare Storage-Netzwerk auslasten können.
+>
+> **Empfehlung für Produktionsumgebungen**:
+>
+> | Cluster-Größe | Empfohlene Bandbreite (Storage) |
+> |---|---|
+> | 2–3 Knoten | **25 GbE** mit RDMA (mindestens 2× pro Knoten) |
+> | 4–8 Knoten | **2× 25 GbE** oder **2× 100 GbE** mit RDMA |
+> | 8–16 Knoten / IO-intensive Workloads | **2× 100 GbE** mit RDMA |
+>
+> Gründe für höhere Bandbreite in Produktion:
+>
+> - **Replikations-Overhead**: Ein VM-Schreibvorgang mit 1 GB/s erzeugt bei Three-Way Mirror 3 GB/s Storage-Netzwerkverkehr
+> - **Re-Sync nach Ausfall**: Wenn ein Knoten ausfällt oder nach einem Update neu gestartet wird, müssen potenziell Terabytes an Daten re-synchronisiert werden — das saturiert 10-GbE-Links vollständig und beeinträchtigt die VM-Performance
+> - **Shared Bandwidth**: Storage-, Live-Migration- und CSV-Redirect-Traffic konkurrieren um die verfügbare Bandbreite. Ohne ausreichend Headroom leidet die Storage-Latenz
+> - **NVMe-Laufwerke**: Moderne NVMe-SSDs liefern sequenziell > 3 GB/s pro Laufwerk. Bereits wenige NVMe-Laufwerke saturieren eine 25-GbE-Verbindung (ca. 3,1 GB/s) — das Netzwerk wird zum Flaschenhals
+
 ### Switchless vs. Switched
 
 | Topologie | Beschreibung | Eignung |
