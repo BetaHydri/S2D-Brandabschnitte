@@ -238,16 +238,16 @@ Set-ClusterQuorum -Cluster "S2DCluster" `
 ## Physische Topologie
 
 ```mermaid
-graph TB
+graph LR
     subgraph BA["Brandabschnitt A"]
-        direction LR
+        direction TB
         N1["Node01<br/>SSD · HDD"]
         N2["Node02<br/>SSD · HDD"]
         N3["Node03<br/>SSD · HDD"]
     end
 
     subgraph BB["Brandabschnitt B"]
-        direction LR
+        direction TB
         N4["Node04<br/>SSD · HDD"]
         N5["Node05<br/>SSD · HDD"]
         N6["Node06<br/>SSD · HDD"]
@@ -257,7 +257,7 @@ graph TB
         FSW[("File Share Witness<br/>FileServer03")]
     end
 
-    BA <==" 25 GbE RDMA · RTT unter 1 ms<br/>Link 1 + Link 2 "==> BB
+    BA <==" 25 GbE RDMA<br/>RTT unter 1 ms<br/>Link 1 + Link 2 "==> BB
     BA -." Quorum ".-> FSW
     BB -." Quorum ".-> FSW
 
