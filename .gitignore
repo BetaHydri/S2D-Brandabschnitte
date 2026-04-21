@@ -10,3 +10,6 @@ Desktop.ini
 # Generated outputs
 *.docx
 *.pdf
+# Allow exported documents in docs/
+!docs/S2D-Brandabschnitte.docx
+!docs/S2D-Brandabschnitte.pdf
