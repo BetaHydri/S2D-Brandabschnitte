@@ -46,6 +46,8 @@ Storage Spaces Direct ist eine [Software-defined Storage (SDS)](glossar.md#sds-s
 | Unterstützte Laufwerke | SATA, SAS, NVMe, Persistent Memory (direkt angeschlossen) |
 | Netzwerk (Minimum) | 10 GbE |
 | Netzwerk (Empfohlen, 4+ Knoten) | [25 GbE](glossar.md#gbe-gigabit-ethernet) mit [RDMA](glossar.md#rdma-remote-direct-memory-access) ([iWARP](glossar.md#iwarp-internet-wide-area-rdma-protocol) oder [RoCE](glossar.md#roce-rdma-over-converged-ethernet)) |
+| **Netzwerk (Produktion)** | **2× 25 GbE oder 2× 100 GbE** mit RDMA für Storage; dedizierte NICs pro Traffic-Typ |
+| NIC-Trennung (Produktion) | Dedizierte NICs für Management, Storage (East-West / CSV), Live Migration und VM-Traffic |
 | Dateisystem | [ReFS](glossar.md#refs-resilient-file-system) (empfohlen) |
 | Deployment-Optionen | Hyperconverged oder Converged (Scale-Out File Server) |
 
