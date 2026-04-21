@@ -239,28 +239,28 @@ Set-ClusterQuorum -Cluster "S2DCluster" `
 
 ```mermaid
 graph LR
-    subgraph BA["🔷 Brandabschnitt A"]
+    subgraph BA[" "]
         direction TB
         BA_T["Brandabschnitt A"]:::title
-        N1["Node01<br/>SSD · HDD"]
-        N2["Node02<br/>SSD · HDD"]
-        N3["Node03<br/>SSD · HDD"]
+        N1["Node01<br/>SSD · HDD"]:::node
+        N2["Node02<br/>SSD · HDD"]:::node
+        N3["Node03<br/>SSD · HDD"]:::node
         BA_T ~~~ N1 & N2 & N3
     end
 
-    subgraph BB["🔷 Brandabschnitt B"]
+    subgraph BB[" "]
         direction TB
         BB_T["Brandabschnitt B"]:::title
-        N4["Node04<br/>SSD · HDD"]
-        N5["Node05<br/>SSD · HDD"]
-        N6["Node06<br/>SSD · HDD"]
+        N4["Node04<br/>SSD · HDD"]:::node
+        N5["Node05<br/>SSD · HDD"]:::node
+        N6["Node06<br/>SSD · HDD"]:::node
         BB_T ~~~ N4 & N5 & N6
     end
 
-    subgraph BC["🟡 Brandabschnitt C"]
+    subgraph BC[" "]
         direction TB
-        BC_T["Brandabschnitt C"]:::title
-        FSW[("File Share Witness<br/>FileServer03")]
+        BC_T["Brandabschnitt C"]:::titleW
+        FSW[("File Share Witness<br/>FileServer03")]:::witness
         BC_T ~~~ FSW
     end
 
@@ -268,10 +268,13 @@ graph LR
     BA -." Quorum ".-> FSW
     BB -." Quorum ".-> FSW
 
-    classDef title fill:#1a73e8,stroke:#1a73e8,color:#fff,font-weight:bold,font-size:14px
-    style BA fill:#e8f4fd,stroke:#1a73e8,stroke-width:2px
-    style BB fill:#e8f4fd,stroke:#1a73e8,stroke-width:2px
-    style BC fill:#fef7e0,stroke:#f9a825,stroke-width:2px
+    classDef title fill:#2d6a9f,stroke:#2d6a9f,color:#fff,font-weight:bold
+    classDef titleW fill:#8b6914,stroke:#8b6914,color:#fff,font-weight:bold
+    classDef node fill:#3a3a3a,stroke:#888,color:#fff
+    classDef witness fill:#3a3a3a,stroke:#8b6914,color:#fff
+    style BA fill:none,stroke:#2d6a9f,stroke-width:2px,stroke-dasharray:5 5
+    style BB fill:none,stroke:#2d6a9f,stroke-width:2px,stroke-dasharray:5 5
+    style BC fill:none,stroke:#8b6914,stroke-width:2px,stroke-dasharray:5 5
 ```
 
 ## Logische Komponenten
