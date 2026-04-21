@@ -237,49 +237,23 @@ Set-ClusterQuorum -Cluster "S2DCluster" `
 
 ## Physische Topologie
 
-```mermaid
-graph TB
-    subgraph TOP[" "]
-        direction LR
-        subgraph BA[" "]
-            direction TB
-            BA_T["Brandabschnitt A"]:::title
-            N1["Node01<br/>SSD · HDD"]:::node
-            N2["Node02<br/>SSD · HDD"]:::node
-            N3["Node03<br/>SSD · HDD"]:::node
-            BA_T ~~~ N1 & N2 & N3
-        end
-
-        subgraph BB[" "]
-            direction TB
-            BB_T["Brandabschnitt B"]:::title
-            N4["Node04<br/>SSD · HDD"]:::node
-            N5["Node05<br/>SSD · HDD"]:::node
-            N6["Node06<br/>SSD · HDD"]:::node
-            BB_T ~~~ N4 & N5 & N6
-        end
-
-        BA <==" 25 GbE RDMA<br/>RTT unter 1 ms<br/>Link 1 + Link 2 "==> BB
-    end
-
-    subgraph BC[" "]
-        direction LR
-        BC_T["Brandabschnitt C"]:::titleW
-        FSW[("File Share Witness<br/>FileServer03")]:::witness
-        BC_T ~~~ FSW
-    end
-
-    BA -." Quorum ".-> FSW
-    BB -." Quorum ".-> FSW
-
-    classDef title fill:#2d6a9f,stroke:#2d6a9f,color:#fff,font-weight:bold
-    classDef titleW fill:#8b6914,stroke:#8b6914,color:#fff,font-weight:bold
-    classDef node fill:#3a3a3a,stroke:#888,color:#fff
-    classDef witness fill:#3a3a3a,stroke:#8b6914,color:#fff
-    style TOP fill:none,stroke:none
-    style BA fill:none,stroke:#2d6a9f,stroke-width:2px,stroke-dasharray:5 5
-    style BB fill:none,stroke:#2d6a9f,stroke-width:2px,stroke-dasharray:5 5
-    style BC fill:none,stroke:#8b6914,stroke-width:2px,stroke-dasharray:5 5
+```
++============================+         +============================+
+|     Brandabschnitt A       |         |     Brandabschnitt B       |
+|                            |  <1 ms  |                            |
+|  +------+ +------+ +------+|  25Gbps |+------+ +------+ +------+ |
+|  |Node01| |Node02| |Node03||=========||Node04| |Node05| |Node06| |
+|  |      | |      | |      ||  RDMA   ||      | |      | |      | |
+|  | SSD  | | SSD  | | SSD  ||  Link 1 || SSD  | | SSD  | | SSD  | |
+|  | HDD  | | HDD  | | HDD  ||  Link 2 || HDD  | | HDD  | | HDD  | |
+|  +------+ +------+ +------+|=========|+------+ +------+ +------+ |
++============================+         +============================+
+              |                                       |
+              |          Brandabschnitt C              |
+              |    +---------------------------+      |
+              +--->| File Share Witness         |<----+
+                   | (\\FileServer03\Witness$)  |
+                   +---------------------------+
 ```
 
 ## Logische Komponenten
