@@ -239,28 +239,36 @@ Set-ClusterQuorum -Cluster "S2DCluster" `
 
 ```mermaid
 graph LR
-    subgraph BA["Brandabschnitt A"]
+    subgraph BA["🔷 Brandabschnitt A"]
         direction TB
+        BA_T["Brandabschnitt A"]:::title
         N1["Node01<br/>SSD · HDD"]
         N2["Node02<br/>SSD · HDD"]
         N3["Node03<br/>SSD · HDD"]
+        BA_T ~~~ N1 & N2 & N3
     end
 
-    subgraph BB["Brandabschnitt B"]
+    subgraph BB["🔷 Brandabschnitt B"]
         direction TB
+        BB_T["Brandabschnitt B"]:::title
         N4["Node04<br/>SSD · HDD"]
         N5["Node05<br/>SSD · HDD"]
         N6["Node06<br/>SSD · HDD"]
+        BB_T ~~~ N4 & N5 & N6
     end
 
-    subgraph BC["Brandabschnitt C"]
+    subgraph BC["🟡 Brandabschnitt C"]
+        direction TB
+        BC_T["Brandabschnitt C"]:::title
         FSW[("File Share Witness<br/>FileServer03")]
+        BC_T ~~~ FSW
     end
 
     BA <==" 25 GbE RDMA<br/>RTT unter 1 ms<br/>Link 1 + Link 2 "==> BB
     BA -." Quorum ".-> FSW
     BB -." Quorum ".-> FSW
 
+    classDef title fill:#1a73e8,stroke:#1a73e8,color:#fff,font-weight:bold,font-size:14px
     style BA fill:#e8f4fd,stroke:#1a73e8,stroke-width:2px
     style BB fill:#e8f4fd,stroke:#1a73e8,stroke-width:2px
     style BC fill:#fef7e0,stroke:#f9a825,stroke-width:2px
