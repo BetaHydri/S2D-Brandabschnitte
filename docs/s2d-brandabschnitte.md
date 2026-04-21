@@ -35,7 +35,7 @@ Kann ein S2D-Cluster zuverlässig über zwei physische Brandabschnitte betrieben
 
 ## Was ist S2D?
 
-Storage Spaces Direct ist eine Software-defined Storage (SDS) Lösung, die in Windows Server 2016 Datacenter und höher enthalten ist. Sie ermöglicht es, die internen Speicherlaufwerke eines Clusters von **2 bis 16 physischen Servern** zu einem softwaredefinierten Speicherpool zusammenzufassen [1].
+Storage Spaces Direct ist eine [Software-defined Storage (SDS)](glossar.md#sds-software-defined-storage) Lösung, die in Windows Server 2016 Datacenter und höher enthalten ist. Sie ermöglicht es, die internen Speicherlaufwerke eines Clusters von **2 bis 16 physischen Servern** zu einem softwaredefinierten [Speicherpool](glossar.md#storage-pool) zusammenzufassen [1].
 
 ## Unterstützte Konfigurationen
 
@@ -45,8 +45,8 @@ Storage Spaces Direct ist eine Software-defined Storage (SDS) Lösung, die in Wi
 | Maximale Knotenzahl | 16 Server |
 | Unterstützte Laufwerke | SATA, SAS, NVMe, Persistent Memory (direkt angeschlossen) |
 | Netzwerk (Minimum) | 10 GbE |
-| Netzwerk (Empfohlen, 4+ Knoten) | 25 GbE mit RDMA (iWARP oder RoCE) |
-| Dateisystem | ReFS (empfohlen) |
+| Netzwerk (Empfohlen, 4+ Knoten) | [25 GbE](glossar.md#gbe-gigabit-ethernet) mit [RDMA](glossar.md#rdma-remote-direct-memory-access) ([iWARP](glossar.md#iwarp-internet-wide-area-rdma-protocol) oder [RoCE](glossar.md#roce-rdma-over-converged-ethernet)) |
+| Dateisystem | [ReFS](glossar.md#refs-resilient-file-system) (empfohlen) |
 | Deployment-Optionen | Hyperconverged oder Converged (Scale-Out File Server) |
 
 *Quelle: Microsoft Learn — Storage Spaces Direct Hardware Requirements [2]*
@@ -55,7 +55,7 @@ Storage Spaces Direct ist eine Software-defined Storage (SDS) Lösung, die in Wi
 
 ## Konzept der Fault Domains
 
-Windows Server Failover Clustering kennt vier hierarchische Ebenen von Fault Domains [3]:
+Windows Server Failover Clustering kennt vier hierarchische Ebenen von [Fault Domains](glossar.md#fault-domain--fault-domain-awareness) [3]:
 
 | Ebene | Beschreibung | Automatisch erkannt? |
 |---|---|---|
@@ -145,13 +145,13 @@ Zusätzlich zu den Standardanforderungen gelten für den Betrieb über zwei Bran
 | **Latenz < 1 ms (Round-Trip)** | S2D schreibt synchron über den Software Storage Bus. Erhöhte Latenz reduziert die I/O-Performance direkt proportional. |
 | **Symmetrische Bandbreite** | Die Inter-Site-Verbindung wird zum Engpass für Schreibvorgänge. Gleiche Bandbreite in beide Richtungen ist erforderlich. |
 | **Redundante Verbindung** | Einzelne Kabelwege durch Brandschotts sind ein Single Point of Failure. Mindestens 2 unabhängige Pfade empfohlen. |
-| **RDMA-Konsistenz** | RDMA-Konfiguration (iWARP/RoCE) muss auf beiden Seiten identisch sein. RoCE erfordert zusätzliche Switch-Konfiguration (PFC, ECN). |
+| **RDMA-Konsistenz** | [RDMA](glossar.md#rdma-remote-direct-memory-access)-Konfiguration ([iWARP](glossar.md#iwarp-internet-wide-area-rdma-protocol)/[RoCE](glossar.md#roce-rdma-over-converged-ethernet)) muss auf beiden Seiten identisch sein. RoCE erfordert zusätzliche Switch-Konfiguration ([PFC](glossar.md#pfc-priority-flow-control), [ECN](glossar.md#ecn-explicit-congestion-notification)). |
 
 ## Physische Kabelführung durch Brandabschnitte
 
 Die Kabelführung durch Brandschottdurchführungen muss den geltenden Brandschutzvorschriften entsprechen:
 
-- Zertifizierte Brandschottdurchführungen für LWL-/Kupferkabel
+- Zertifizierte [Brandschottdurchführungen](glossar.md#brandschott--brandschottdurchführung) für [LWL](glossar.md#lwl-lichtwellenleiter)-/Kupferkabel
 - Dokumentation der Durchführungen gemäß Bauordnung
 - Regelmäßige Prüfung der Brandschottintegrität
 
@@ -164,9 +164,9 @@ Die folgende Tabelle zeigt die verfügbaren Resilienz-Typen und ihre Eigenschaft
 | Resilienz-Typ | Tolerierte Ausfälle | Speichereffizienz | Min. Fault Domains |
 |---|---|---|---|
 | Two-way Mirror | 1 | 50,0 % | 2 |
-| **Three-way Mirror** | **2** | **33,3 %** | **3** |
-| Dual Parity | 2 | 50,0–80,0 % | 4 |
-| Mixed (Mirror-Accelerated Parity) | 2 | 33,3–80,0 % | 4 |
+| **[Three-way Mirror](glossar.md#three-way-mirror)** | **2** | **33,3 %** | **3** |
+| [Dual Parity](glossar.md#dual-parity) | 2 | 50,0–80,0 % | 4 |
+| [Mixed (Mirror-Accelerated Parity)](glossar.md#mirror-accelerated-parity) | 2 | 33,3–80,0 % | 4 |
 
 ## Empfehlung für 6-Node-Cluster über Brandabschnitte
 
@@ -187,9 +187,9 @@ Für den Betrieb über zwei Brandabschnitte wird **Three-way Mirror** empfohlen:
 
 Wenn ein kompletter Brandabschnitt ausfällt (3 von 6 Knoten), gelten folgende Einschränkungen:
 
-**Cluster Quorum**: Bei 6 Knoten (ungerade Stimmenzahl nach Dynamic Quorum) überlebt der Cluster den Verlust von 3 Knoten grundsätzlich, da die verbleibenden 3 Knoten die Mehrheit bilden können [5].
+**[Cluster Quorum](glossar.md#quorum--cluster-quorum)**: Bei 6 Knoten (ungerade Stimmenzahl nach [Dynamic Quorum](glossar.md#dynamic-quorum)) überlebt der Cluster den Verlust von 3 Knoten grundsätzlich, da die verbleibenden 3 Knoten die Mehrheit bilden können [5].
 
-**Pool Quorum**: Die verbleibende Hälfte der Laufwerke muss zusammen mit dem Pool Resource Owner die Mehrheit der Stimmen haben. Bei symmetrischer Laufwerksverteilung (gleiche Anzahl pro Knoten) ist dies grenzwertig [5].
+**[Pool Quorum](glossar.md#pool-quorum)**: Die verbleibende Hälfte der Laufwerke muss zusammen mit dem Pool Resource Owner die Mehrheit der Stimmen haben. Bei symmetrischer Laufwerksverteilung (gleiche Anzahl pro Knoten) ist dies grenzwertig [5].
 
 > **Risiko**: Der gleichzeitige Ausfall aller 3 Server eines Brandabschnitts überschreitet die von S2D unterstützte maximale Ausfalltoleranz von 2 Knoten. Volumes können offline gehen.
 
@@ -207,9 +207,9 @@ Laut Microsoft-Dokumentation gilt für 5 oder mehr Knoten [5]:
 
 | Witness-Typ | Beschreibung | Eignung |
 |---|---|---|
-| **File Share Witness** | SMB-Freigabe auf einem separaten Dateiserver | **Empfohlen** — rein on-premises |
-| Cloud Witness | Azure Blob Storage | Erfordert Internetverbindung zu Azure |
-| Disk Witness | Clustered Disk | **Nicht unterstützt** bei S2D [5] |
+| **[File Share Witness](glossar.md#file-share-witness)** | [SMB](glossar.md#smb-server-message-block)-Freigabe auf einem separaten Dateiserver | **Empfohlen** — rein on-premises |
+| [Cloud Witness](glossar.md#cloud-witness) | Azure Blob Storage | Erfordert Internetverbindung zu Azure |
+| [Disk Witness](glossar.md#disk-witness) | Clustered Disk | **Nicht unterstützt** bei S2D [5] |
 
 ### On-Premises File Share Witness einrichten
 

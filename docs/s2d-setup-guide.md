@@ -62,18 +62,18 @@ S2D arbeitet mit direkt angeschlossenen Laufwerken der folgenden Typen [2][3]:
 
 | Laufwerkstyp | Beschreibung |
 |---|---|
-| **NVMe** | Non-Volatile Memory Express — höchste IOPS und niedrigste Latenz (M.2, U.2, Add-in Card) |
-| **SSD** | Solid-State Drives über SATA oder SAS |
-| **HDD** | Rotierende Festplatten über SATA oder SAS |
-| **Persistent Memory (PMem)** | Persistenter Speicher im Block-Storage-Modus |
+| **[NVMe](glossar.md#nvme-non-volatile-memory-express)** | Non-Volatile Memory Express — höchste [IOPS](glossar.md#iops-inputoutput-operations-per-second) und niedrigste Latenz (M.2, U.2, Add-in Card) |
+| **[SSD](glossar.md#ssd-solid-state-drive)** | Solid-State Drives über [SATA](glossar.md#sata-serial-advanced-technology-attachment) oder [SAS](glossar.md#sas-serial-attached-scsi) |
+| **[HDD](glossar.md#hdd-hard-disk-drive)** | Rotierende Festplatten über SATA oder SAS |
+| **[Persistent Memory (PMem)](glossar.md#pmem-persistent-memory)** | Persistenter Speicher im Block-Storage-Modus |
 
-> **Nicht unterstützt**: Reine HDD-Deployments ohne schnellere Laufwerke als Cache-Tier. SAN-Storage (Fibre Channel, iSCSI, FCoE) wird ebenfalls nicht unterstützt [2].
+> **Nicht unterstützt**: Reine HDD-Deployments ohne schnellere Laufwerke als Cache-Tier. [SAN](glossar.md#san-storage-area-network)-Storage (Fibre Channel, [iSCSI](glossar.md#iscsi-internet-small-computer-systems-interface), [FCoE](glossar.md#fcoe-fibre-channel-over-ethernet)) wird ebenfalls nicht unterstützt [2].
 
 ### Laufwerkssymmetrie
 
 Alle Server im Cluster müssen über die **gleiche Anzahl und die gleichen Typen** von Laufwerken verfügen [2]. Weitere Empfehlungen:
 
-- SSDs müssen über **Power-Loss Protection** verfügen (keine Consumer-SSDs) [2]
+- SSDs müssen über **[Power-Loss Protection](glossar.md#power-loss-protection)** verfügen (keine Consumer-SSDs) [2]
 - Cache-Laufwerke müssen mindestens **32 GB** groß sein [2]
 - Der NVMe-Treiber muss der von Microsoft bereitgestellte Treiber sein (`stornvme.sys`) [2]
 - Die Anzahl der Kapazitätslaufwerke sollte ein ganzzahliges Vielfaches der Cache-Laufwerke sein [2]
@@ -110,7 +110,7 @@ Wenn **zwei unterschiedliche Laufwerkstypen** vorhanden sind, verwendet S2D auto
 | Anforderung | Spezifikation |
 |---|---|
 | Boot-Gerät | Jedes von Windows Server unterstützte Boot-Gerät (inkl. SATADOM) |
-| RAID 1 | Nicht erforderlich, aber für Boot unterstützt |
+| [RAID](glossar.md#raid-redundant-array-of-independent-disks) 1 | Nicht erforderlich, aber für Boot unterstützt |
 | Mindestgröße | 200 GB empfohlen |
 | Trennung | Boot-Laufwerk muss **separat** von den S2D-Datenlaufwerken sein |
 
@@ -123,9 +123,9 @@ Wenn **zwei unterschiedliche Laufwerkstypen** vorhanden sind, verwendet S2D auto
 | Szenario | Anforderung |
 |---|---|
 | 2–3 Knoten (Minimum) | **10 GbE** NIC oder schneller |
-| 4+ Knoten (empfohlen) | **25 GbE** oder schneller, RDMA-fähig |
+| 4+ Knoten (empfohlen) | **[25 GbE](glossar.md#gbe-gigabit-ethernet)** oder schneller, [RDMA](glossar.md#rdma-remote-direct-memory-access)-fähig |
 | Redundanz | Mindestens **2 Netzwerkverbindungen** pro Knoten empfohlen |
-| RDMA-Protokoll | **iWARP** (empfohlen, einfacher einzurichten) oder **RoCE** (v1/v2) |
+| RDMA-Protokoll | **[iWARP](glossar.md#iwarp-internet-wide-area-rdma-protocol)** (empfohlen, einfacher einzurichten) oder **[RoCE](glossar.md#roce-rdma-over-converged-ethernet)** (v1/v2) |
 | Topologie | Switched oder Switchless (Direct-Attach) |
 
 *Quelle: Microsoft Learn — Storage Spaces Direct Hardware Requirements [2]*
@@ -137,7 +137,7 @@ Wenn **zwei unterschiedliche Laufwerkstypen** vorhanden sind, verwendet S2D auto
 | **Switchless** | Direkte Verbindungen zwischen allen Knoten (jeder mit jedem) | 2–3 Knoten |
 | **Switched** | Über Netzwerk-Switches verbunden | Alle Cluster-Größen, empfohlen ab 4 Knoten |
 
-> **Wichtig bei RoCE**: Bei Verwendung von RoCE muss der Top-of-Rack-Switch korrekt konfiguriert werden (PFC, ECN). iWARP erfordert keine spezielle Switch-Konfiguration und ist daher einfacher zu implementieren [1][4].
+> **Wichtig bei RoCE**: Bei Verwendung von RoCE muss der [Top-of-Rack-Switch](glossar.md#tor-top-of-rack) korrekt konfiguriert werden ([PFC](glossar.md#pfc-priority-flow-control), [ECN](glossar.md#ecn-explicit-congestion-notification)). iWARP erfordert keine spezielle Switch-Konfiguration und ist daher einfacher zu implementieren [1][4].
 
 ### NIC-Anforderungen
 
@@ -145,13 +145,13 @@ Wenn **zwei unterschiedliche Laufwerkstypen** vorhanden sind, verwendet S2D auto
 |---|---|
 | NIC-Typ | RDMA-fähig (iWARP oder RoCE) empfohlen |
 | Firmenmatch | NIC-Adapter, Treiber und Firmware müssen auf allen Knoten **exakt identisch** sein [2] |
-| SET-Teaming | Switch Embedded Teaming (SET) unterstützt — siehe Netzwerk-Konfiguration |
+| [SET](glossar.md#set-switch-embedded-teaming)-Teaming | Switch Embedded Teaming (SET) unterstützt — siehe Netzwerk-Konfiguration |
 
-## Host Bus Adapter (HBA)
+## [Host Bus Adapter (HBA)](glossar.md#hba-host-bus-adapter)
 
 | Anforderung | Spezifikation |
 |---|---|
-| Modus | **Simple Pass-Through** (direkte Durchreichung) |
+| Modus | **[Simple Pass-Through](glossar.md#pass-through-hba-modus)** (direkte Durchreichung) |
 | RAID-Controller | **Nicht unterstützt** für S2D-Datenlaufwerke |
 | SAS-HBA mit SAS-/SATA-Laufwerken | Unterstützt |
 | RAID-Controller mit Pass-Through | Nur unterstützt, wenn ausschließlich SAS physische Laufwerke direkt durchgereicht werden |
@@ -165,7 +165,7 @@ Wenn **zwei unterschiedliche Laufwerkstypen** vorhanden sind, verwendet S2D auto
 | Switchless (2–3 Knoten) | Direkte Verbindungen (Direct-Attach) zwischen allen Knoten |
 | Switched (4+ Knoten) | Über redundante Switches verbunden |
 | Redundanz | Mindestens **2 unabhängige Switches** für Storage-Traffic empfohlen |
-| Kabeltyp | Abhängig von NIC-Typ: DAC-Kabel (Direct Attach Copper), LWL (Glasfaser), Kupfer |
+| Kabeltyp | Abhängig von NIC-Typ: [DAC](glossar.md#dac-direct-attach-copper)-Kabel (Direct Attach Copper), [LWL](glossar.md#lwl-lichtwellenleiter) (Glasfaser), Kupfer |
 
 # Software-Voraussetzungen
 
@@ -188,7 +188,7 @@ Die folgenden Rollen und Features müssen auf **allen Knoten** installiert werde
 | **Failover-Clustering** | Cluster-Infrastruktur |
 | **Hyper-V** | Für Hyperconverged-Deployments (VMs auf dem Cluster) |
 | **File Server** | Für Converged-Deployments (Scale-Out File Server) |
-| **Data-Center-Bridging** | Für RoCEv2-Netzwerkadapter (PFC/ECN-Konfiguration) |
+| **[Data-Center-Bridging](glossar.md#dcb-data-center-bridging)** | Für RoCEv2-Netzwerkadapter ([PFC](glossar.md#pfc-priority-flow-control)/[ECN](glossar.md#ecn-explicit-congestion-notification)-Konfiguration) |
 | **RSAT-Clustering-PowerShell** | Remote-Verwaltung des Clusters |
 | **Hyper-V-PowerShell** | PowerShell-Verwaltung von Hyper-V |
 | Data Deduplication | Optional — Speicherplatzoptimierung |
@@ -225,7 +225,7 @@ Für einen S2D-Cluster werden typischerweise mehrere logische Netzwerke konfigur
 | **Live Migration** | VM-Live-Migration zwischen Knoten | 10–25 GbE |
 | **VM-Netzwerk** | VM-Traffic (Tenant-Netzwerk) | 10–25 GbE |
 
-### VLAN-Trennung
+### [VLAN](glossar.md#vlan-virtual-local-area-network)-Trennung
 
 | Netzwerk | VLAN | Begründung |
 |---|---|---|
@@ -234,7 +234,7 @@ Für einen S2D-Cluster werden typischerweise mehrere logische Netzwerke konfigur
 | Live Migration | Eigenes VLAN oder gemeinsam mit Storage | Vermeidung von Interferenz mit VM-Traffic |
 | VM-Netzwerk | Ein oder mehrere VLANs | Mandantentrennung und Segmentierung |
 
-## SMB Direct und SMB Multichannel
+## [SMB Direct](glossar.md#smb-direct) und [SMB Multichannel](glossar.md#smb-multichannel)
 
 S2D nutzt **SMB 3.x** als Transportprotokoll für den Storage-Traffic [1]:
 
@@ -256,7 +256,7 @@ Ab Windows Server 2016 wird **Switch Embedded Teaming (SET)** empfohlen [4]:
 | Verwaltung | Über Hyper-V Virtual Switch | Über separate NIC-Teaming-Konfiguration |
 | Empfehlung für S2D | **Empfohlen** | Nicht empfohlen für S2D |
 
-> **Wichtig**: Traditionelles NIC Teaming (LBFO) ist **nicht kompatibel** mit RDMA. Für S2D-Deployments muss SET verwendet werden, um RDMA-Funktionalität auf den virtuellen Host-NICs (vNICs) zu nutzen.
+> **Wichtig**: Traditionelles NIC Teaming ([LBFO](glossar.md#lbfo-load-balancing-and-failover)) ist **nicht kompatibel** mit RDMA. Für S2D-Deployments muss SET verwendet werden, um RDMA-Funktionalität auf den virtuellen Host-NICs ([vNICs](glossar.md#vnic-virtual-nic)) zu nutzen.
 
 ### SET-Konfiguration (Beispiel)
 
@@ -279,11 +279,11 @@ Set-VMNetworkAdapterVlan -ManagementOS -VMNetworkAdapterName "Storage1" -Access 
 Set-VMNetworkAdapterVlan -ManagementOS -VMNetworkAdapterName "Storage2" -Access -VlanId 712
 ```
 
-## Jumbo Frames
+## [Jumbo Frames](glossar.md#jumbo-frames)
 
 | Aspekt | Empfehlung |
 |---|---|
-| MTU-Größe | **9014 Bytes** (Jumbo Frames) für Storage-Netzwerk empfohlen |
+| [MTU](glossar.md#mtu-maximum-transmission-unit)-Größe | **9014 Bytes** (Jumbo Frames) für Storage-Netzwerk empfohlen |
 | Konsistenz | Alle Geräte im Pfad (NICs, Switches, vNICs) müssen die gleiche MTU verwenden |
 | Management-Netzwerk | Standard-MTU (1500 Bytes) beibehalten |
 | Validierung | Jumbo Frames vor dem Cluster-Setup Ende-zu-Ende testen |
@@ -311,7 +311,7 @@ Das Deployment eines S2D-Clusters umfasst die folgenden Schritte [4]:
 | 3 | Netzwerk konfigurieren (SET, RDMA, VLANs) |
 | 4 | Cluster validieren |
 | 5 | Cluster erstellen |
-| 6 | Fault Domains konfigurieren (optional) |
+| 6 | [Fault Domains](glossar.md#fault-domain--fault-domain-awareness) konfigurieren (optional) |
 | 7 | Storage Spaces Direct aktivieren |
 | 8 | Volumes erstellen |
 | 9 | Quorum Witness konfigurieren |
@@ -492,10 +492,10 @@ New-Volume -FriendlyName "Volume02" `
 | Resilienz-Typ | Min. Knoten | Tolerierte Ausfälle | Speichereffizienz |
 |---|---|---|---|
 | Two-way Mirror | 2 | 1 | 50 % |
-| Three-way Mirror | 3 | 2 | 33,3 % |
+| [Three-way Mirror](glossar.md#three-way-mirror) | 3 | 2 | 33,3 % |
 | Nested Resiliency | 2 | 2 (inkl. Intra-Node) | 25–40 % |
-| Dual Parity | 4 | 2 | 50–80 % |
-| Mirror-Accelerated Parity | 4 | 2 | 33,3–80 % |
+| [Dual Parity](glossar.md#dual-parity) | 4 | 2 | 50–80 % |
+| [Mirror-Accelerated Parity](glossar.md#mirror-accelerated-parity) | 4 | 2 | 33,3–80 % |
 
 *Quelle: Microsoft Learn — Plan Volumes [6], Fault Tolerance [7]*
 
@@ -529,9 +529,9 @@ Set-ClusterQuorum -Cluster "S2DCluster" `
 
 | Witness-Typ | Beschreibung | Eignung |
 |---|---|---|
-| **File Share Witness** | SMB-Freigabe auf separatem Server | On-premises-Deployments |
-| **Cloud Witness** | Azure Blob Storage | Deployments mit Internetzugang |
-| Disk Witness | Clustered Disk | **Nicht unterstützt** bei S2D [8] |
+| **[File Share Witness](glossar.md#file-share-witness)** | SMB-Freigabe auf separatem Server | On-premises-Deployments |
+| **[Cloud Witness](glossar.md#cloud-witness)** | Azure Blob Storage | Deployments mit Internetzugang |
+| [Disk Witness](glossar.md#disk-witness) | Clustered Disk | **Nicht unterstützt** bei S2D [8] |
 
 > **Wichtig**: Ein **Disk Witness** wird bei S2D nicht unterstützt, da kein gemeinsam genutzter Speicher vorhanden ist [8].
 

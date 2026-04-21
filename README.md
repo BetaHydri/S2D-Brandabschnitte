@@ -22,6 +22,8 @@ Alle Aussagen sind gegen die offizielle Microsoft-Dokumentation validiert.
   — Vollständige technische Bewertung
 - [S2D Setup-Leitfaden](docs/s2d-setup-guide.md)
   — Hardware, Software und Deployment eines S2D-Clusters
+- [Glossar — Fachbegriffe und Abkürzungen](docs/glossar.md)
+  — Nachschlagewerk für alle technischen Begriffe und Abkürzungen
 
 ## Zielgruppe
 
