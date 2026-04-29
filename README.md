@@ -26,10 +26,10 @@ Alle Aussagen sind gegen die offizielle Microsoft-Dokumentation validiert.
   — Schritt-für-Schritt-Anleitung für den Aufbau eines
   S2D-Clusters: Hardware-Voraussetzungen, Netzwerk-Konfiguration,
   Deployment per PowerShell und Post-Deployment-Validierung
-- [S2D On-Premises vs. Azure Local (Isolated)](docs/s2d-vs-azure-local.md)
-  — Vergleich zwischen klassischem S2D On-Premises und Azure Local
-  mit Disconnected Operations: Funktionsunterschiede, Vorteile
-  von Azure Local für regulierte und Air-Gap-Umgebungen,
+- [HCI-Plattformvergleich: Windows Server HCI, Azure Local Connected und Azure Local Isolated](docs/hci-plattformvergleich.md)
+  — Drei-Wege-Vergleich zwischen HCI On-Premises (Windows Server),
+  Azure Local (Connected) und Azure Local mit Disconnected Operations:
+  Funktionsunterschiede, Plattform-Stärken, Lizenzierung,
   Einsatzszenarien und Einschränkungen
 - [Glossar — Fachbegriffe und Abkürzungen](docs/glossar.md)
   — Nachschlagewerk für alle technischen Begriffe und Abkürzungen

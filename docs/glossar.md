@@ -1,8 +1,8 @@
 ---
 title: "Glossar — Fachbegriffe und Abkürzungen"
-subtitle: "Nachschlagewerk für Storage Spaces Direct, Netzwerk und Cluster-Technologien"
+subtitle: "Nachschlagewerk für Storage Spaces Direct, HCI, Azure Local, Netzwerk und Cluster-Technologien"
 author: "Jan Tiedemann"
-date: "21. April 2026"
+date: "29. April 2026"
 lang: de
 toc: true
 toc-depth: 2
@@ -10,7 +10,99 @@ toc-depth: 2
 
 # Glossar — Fachbegriffe und Abkürzungen
 
-Dieses Dokument dient als Nachschlagewerk für alle Fachbegriffe und Abkürzungen, die in den Dokumenten [S2D über Brandabschnitte](s2d-brandabschnitte.md) und [S2D Setup-Leitfaden](s2d-setup-guide.md) verwendet werden.
+Dieses Dokument dient als Nachschlagewerk für alle Fachbegriffe und Abkürzungen, die in den Dokumenten [S2D über Brandabschnitte](s2d-brandabschnitte.md), [S2D Setup-Leitfaden](s2d-setup-guide.md) und [HCI-Plattformvergleich](hci-plattformvergleich.md) verwendet werden.
+
+---
+
+## HCI und Azure-Plattformen
+
+### HCI (Hyper-Converged Infrastructure)
+
+Rechenzentrumsarchitektur, bei der Compute (Virtualisierung), Storage und Netzwerk auf denselben physischen Servern konsolidiert und softwaregesteuert betrieben werden. Unter Windows Server bilden **Hyper-V** (Compute), **Storage Spaces Direct** (Storage) und **Failover Clustering** (Hochverfügbarkeit) gemeinsam den HCI-Stack. Siehe auch: [Hyperconverged](#hyperconverged).
+
+### Azure Local (ehemals Azure Stack HCI)
+
+Microsofts hyperkonvergente Infrastrukturplattform, die über Azure Arc in die Azure-Verwaltungsebene integriert wird. Verfügbar in zwei Betriebsmodi: **Connected** (mit Cloud-Anbindung) und **Isolated** (Disconnected Operations, ohne Cloud-Anbindung). Basiert auf derselben Hyper-V- und S2D-Technologie wie Windows Server HCI, bietet jedoch ein Azure-Management-Erlebnis.
+
+### Azure Arc
+
+Azure-Dienst, der On-Premises- und Multi-Cloud-Ressourcen in die Azure-Verwaltungsebene einbindet. Ermöglicht die Verwaltung von Servern, Kubernetes-Clustern und Datenbanken über das Azure Portal, als wären sie native Azure-Ressourcen. Azure Local nutzt Azure Arc für die Cloud-Integration.
+
+### ARM (Azure Resource Manager)
+
+Bereitstellungs- und Verwaltungsebene von Azure. Alle Azure-Ressourcen werden über ARM erstellt, aktualisiert und gelöscht. ARM-Templates (JSON) und Bicep sind deklarative Beschreibungssprachen für Infrastructure as Code. Azure Local nutzt ARM sowohl im Connected- als auch im Isolated-Modus.
+
+### Bicep
+
+Deklarative Sprache von Microsoft für die Bereitstellung von Azure-Ressourcen. Kompiliert zu ARM-Templates (JSON), bietet aber eine lesbarere Syntax. Alternative zu ARM-Templates für Infrastructure as Code auf Azure Local (Connected).
+
+### RBAC (Role-Based Access Control)
+
+Autorisierungsmodell, das den Zugriff auf Ressourcen über Rollenzuweisungen steuert. In Azure werden Rollen (z. B. Contributor, Reader, Owner) auf Scopes (Subscription, Resource Group, Resource) zugewiesen. Azure Local nutzt Azure RBAC — im Connected-Modus über Entra ID, im Isolated-Modus über eine lokale RBAC-Verwaltung.
+
+### Entra ID (ehemals Azure Active Directory / Azure AD)
+
+Microsofts cloudbasierter Identitäts- und Zugriffsverwaltungsdienst. Stellt Authentifizierung und Autorisierung für Azure-Ressourcen bereit. Azure Local (Connected) nutzt Entra ID als Identitätsprovider; im Isolated-Modus wird stattdessen eine lokale Identitätsverwaltung eingesetzt.
+
+### AKS (Azure Kubernetes Service)
+
+Verwalteter Kubernetes-Dienst von Microsoft. **AKS enabled by Arc** ermöglicht die Bereitstellung von Kubernetes-Clustern auf Azure Local — sowohl im Connected- als auch im Isolated-Modus. Stellt Container-Orchestrierung, Skalierung und Lifecycle-Management bereit.
+
+### MCA-E (Microsoft Customer Agreement for Enterprises)
+
+Enterprise-Lizenzvertrag von Microsoft, der für bestimmte Azure-Dienste erforderlich ist. Azure Local im Isolated-Modus (Disconnected Operations) erfordert einen MCA-E-Vertrag und einen dokumentierten Business Need für den Zugang.
+
+### Air-Gap
+
+Netzwerkisolation, bei der ein System **keinerlei physische oder logische Verbindung** zu externen Netzwerken (Internet, andere Netze) hat. Azure Local Isolated ist für Air-Gap-Umgebungen konzipiert. Daten, Steuerungsebene und Verwaltung verbleiben vollständig innerhalb der physischen Grenzen der Organisation.
+
+---
+
+## Verwaltungswerkzeuge
+
+### WAC (Windows Admin Center)
+
+Browserbasiertes Verwaltungstool von Microsoft für Windows Server und HCI-Cluster. Ersetzt klassische MMC-Konsolen und ermöglicht die zentrale Verwaltung von Servern, Clustern, Hyper-V und S2D über eine moderne Web-Oberfläche. Bei Azure Local (Connected) kann WAC in das Azure Portal integriert werden.
+
+### SCVMM (System Center Virtual Machine Manager)
+
+Verwaltungslösung aus der System-Center-Suite für die zentrale Verwaltung virtualisierter Rechenzentren. Ermöglicht Management von Hyper-V-Hosts, VMs, Storage und Netzwerk über mehrere Cluster hinweg. Erfordert eine separate Lizenz.
+
+### SCOM (System Center Operations Manager)
+
+Monitoring-Lösung aus der System-Center-Suite. Überwacht Infrastruktur, Betriebssysteme und Anwendungen über Management Packs. Wird bei allen drei HCI-Plattformen als On-Premises-Monitoring-Option unterstützt.
+
+### SCCM / MECM (System Center Configuration Manager / Microsoft Endpoint Configuration Manager)
+
+Verwaltungslösung für Software-Verteilung, Patch-Management und Compliance. Bei Windows Server HCI für die Verteilung von OS-Updates und Treibern eingesetzt. Wird bei Azure Local durch Azure Update Manager (Connected) oder Offline-Pakete (Isolated) ersetzt.
+
+### WSUS (Windows Server Update Services)
+
+Serverrolle für die zentrale Verwaltung und Verteilung von Microsoft-Updates im lokalen Netzwerk. Bei Windows Server HCI eine der Standardmethoden für Patch-Management.
+
+### DPM (Data Protection Manager)
+
+Backup-Lösung aus der System-Center-Suite für die Sicherung von Windows-Servern, VMs, SQL-Datenbanken und Dateiservern. Alternative zu Windows Server Backup für HCI On-Premises.
+
+### DSC (Desired State Configuration)
+
+Deklarative Konfigurationsmanagement-Plattform in PowerShell. Ermöglicht die Definition und Durchsetzung gewünschter Systemkonfigurationen als Code (Infrastructure as Code). Bei Windows Server HCI als IaC-Option eingesetzt.
+
+---
+
+## Compliance und Regulierung
+
+### DSGVO (Datenschutz-Grundverordnung)
+
+EU-Verordnung (GDPR) zum Schutz personenbezogener Daten. Stellt Anforderungen an die Verarbeitung, Speicherung und Übertragung personenbezogener Daten. Kann Einfluss auf die Wahl der HCI-Plattform haben — insbesondere hinsichtlich der Frage, ob Daten in die Cloud übertragen werden.
+
+### KRITIS (Kritische Infrastrukturen)
+
+Bezeichnung für Organisationen und Einrichtungen mit wichtiger Bedeutung für das staatliche Gemeinwesen, deren Ausfall oder Beeinträchtigung erhebliche Versorgungsengpässe oder Gefährdungen verursacht. Betreiber kritischer Infrastrukturen unterliegen besonderen IT-Sicherheitsanforderungen (BSI-Gesetz, IT-Sicherheitsgesetz). Kann den Einsatz von Air-Gap-Umgebungen (Azure Local Isolated) erfordern.
+
+### VS-NfD (Verschlusssache — Nur für den Dienstgebrauch)
+
+Niedrigste Geheimhaltungsstufe für Verschlusssachen in Deutschland. Dokumente und Systeme, die als VS-NfD eingestuft sind, dürfen nur in dafür zugelassenen IT-Umgebungen verarbeitet werden. Kann den Einsatz von Azure Local Isolated in Air-Gap-Konfiguration erfordern.
 
 ---
 
@@ -424,6 +516,10 @@ Rechenzentrumsarchitektur, bei der Compute, Storage und Netzwerk vollständig so
 ---
 
 ## Weitere Abkürzungen
+
+### CEIP (Customer Experience Improvement Program)
+
+Optionales Telemetrieprogramm von Microsoft, das anonymisierte Nutzungsdaten an Microsoft sendet. Bei Windows Server HCI optional; bei Azure Local (Connected) ist Azure-Telemetrie hingegen erforderlich.
 
 ### ECC (Error-Correcting Code)
 
