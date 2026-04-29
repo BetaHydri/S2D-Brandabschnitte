@@ -11,14 +11,14 @@ toc-depth: 3
 # Zusammenfassung
 
 Dieses Dokument vergleicht drei hyperkonvergente
-Infrastrukturplattformen (HCI) von Microsoft:
+Infrastrukturplattformen ([HCI](glossar.md#hci-hyper-converged-infrastructure)) von Microsoft:
 
 1. **HCI On-Premises (Windows Server)** — die in
    Windows Server Datacenter enthaltene hyperkonvergente
-   Lösung bestehend aus Hyper-V (Compute), Storage Spaces
-   Direct (Storage) und Failover Clustering (Hochverfügbarkeit)
-2. **Azure Local (Connected)** — ehemals Azure Stack HCI; die
-   über Azure Arc in die Azure-Verwaltungsebene integrierte
+   Lösung bestehend aus Hyper-V (Compute), [Storage Spaces
+   Direct](glossar.md#s2d-storage-spaces-direct) (Storage) und Failover Clustering (Hochverfügbarkeit)
+2. **[Azure Local](glossar.md#azure-local-ehemals-azure-stack-hci) (Connected)** — ehemals Azure Stack HCI; die
+   über [Azure Arc](glossar.md#azure-arc) in die Azure-Verwaltungsebene integrierte
    HCI-Plattform mit permanenter oder periodischer
    Cloud-Anbindung
 3. **Azure Local Isolated (Disconnected Operations)** — Azure
@@ -36,7 +36,7 @@ Diensteumfang und Cloud-Integration. Azure Local (Connected)
 bietet das vollständigste Azure-Erlebnis mit Cloud-basierten
 Updates, Azure Monitor und Marketplace-Zugriff. Azure Local
 Isolated liefert ein vergleichbares Funktionsspektrum ohne
-Cloud-Anbindung — ideal für regulierte und Air-Gap-Umgebungen.
+Cloud-Anbindung — ideal für regulierte und [Air-Gap](glossar.md#air-gap)-Umgebungen.
 HCI On-Premises unter Windows Server bleibt die
 kostengünstigste Option für reine
 Windows-Server-Umgebungen ohne Azure-Anforderungen.
@@ -53,9 +53,9 @@ gemeinsam den HCI-Stack:
 | Schicht | Technologie | Rolle |
 |---|---|---|
 | **Compute** | Hyper-V | Virtualisierung von Workloads (VMs) |
-| **Storage** | Storage Spaces Direct (S2D) | Software-defined Storage — fasst die internen Laufwerke von 2 bis 16 Servern zu einem Speicherpool zusammen [^1] |
+| **Storage** | [Storage Spaces Direct (S2D)](glossar.md#s2d-storage-spaces-direct) | [Software-defined Storage](glossar.md#sds-software-defined-storage) — fasst die internen Laufwerke von 2 bis 16 Servern zu einem [Speicherpool](glossar.md#storage-pool) zusammen [^1] |
 | **Hochverfügbarkeit** | Failover Clustering | Automatisches Failover von VMs und Diensten bei Knotenausfall |
-| **Netzwerk** | SET, SMB Direct, RDMA | Konvergentes Netzwerk mit RDMA-Beschleunigung |
+| **Netzwerk** | [SET](glossar.md#set-switch-embedded-teaming), [SMB Direct](glossar.md#smb-direct), [RDMA](glossar.md#rdma-remote-direct-memory-access) | Konvergentes Netzwerk mit RDMA-Beschleunigung |
 | **Netzwerk (optional)** | Network Controller / SDN | Software Defined Networking für Mandantenisolation |
 
 S2D allein ist also nur die **Storage-Schicht** — erst in
@@ -65,10 +65,10 @@ eine vollständige HCI-Lösung.
 Die Verwaltung erfolgt über klassische
 Windows-Server-Werkzeuge:
 
-- Windows Admin Center (WAC)
+- [Windows Admin Center (WAC)](glossar.md#wac-windows-admin-center)
 - Failover Cluster Manager
 - PowerShell
-- System Center Virtual Machine Manager (SCVMM)
+- [System Center Virtual Machine Manager (SCVMM)](glossar.md#scvmm-system-center-virtual-machine-manager)
 
 Details zur S2D-Architektur und zum Aufbau eines Clusters
 finden sich im
@@ -79,7 +79,7 @@ Brandabschnitte](s2d-brandabschnitte.md).
 ## Azure Local — Connected (ehemals Azure Stack HCI)
 
 Azure Local ist Microsofts hyperkonvergente
-Infrastrukturplattform, die über Azure Arc in die
+Infrastrukturplattform, die über [Azure Arc](glossar.md#azure-arc) in die
 Azure-Verwaltungsebene integriert wird. Im Standardmodus
 (**Connected**) erfordert Azure Local eine Verbindung zur
 Azure Public Cloud für Lizenzierung, Updates und
@@ -93,12 +93,12 @@ eingeschränkt wird [^2]. Die Verwaltung erfolgt über:
 - Azure Portal (Cloud-basiert)
 - Azure CLI und Azure PowerShell
 - Windows Admin Center (mit Azure-Integration)
-- ARM-Templates und Bicep
+- [ARM](glossar.md#arm-azure-resource-manager)-Templates und [Bicep](glossar.md#bicep)
 
 Azure Local Connected bietet Zugriff auf das vollständige
 Azure-Hybrid-Ökosystem:
 
-- **Azure Kubernetes Service (AKS)** enabled by Arc
+- **[Azure Kubernetes Service (AKS)](glossar.md#aks-azure-kubernetes-service)** enabled by Arc
 - **Azure Arc VMs** — Azure-verwaltete virtuelle Maschinen
 - **Azure Monitor** — Cloud-basiertes Monitoring und Alerting
 - **Azure Update Manager** — Zentralisierte Update-Verwaltung
@@ -121,7 +121,7 @@ Pendants ersetzt:
 
 - Lokales Azure-Portal statt Cloud-Portal
 - Offline-Update-Pakete statt Azure Update Manager
-- Lokale RBAC-Verwaltung statt Azure Entra ID
+- Lokale [RBAC](glossar.md#rbac-role-based-access-control)-Verwaltung statt [Azure Entra ID](glossar.md#entra-id-ehemals-azure-active-directory--azure-ad)
 - Kein Azure Monitor, Azure Backup oder Azure Marketplace
 
 # Funktionsvergleich
@@ -132,8 +132,8 @@ Pendants ersetzt:
 |---|---|---|---|
 | **Verwaltungsoberfläche** | WAC, Failover Cluster Manager, SCVMM | Azure Portal (Cloud), WAC | Lokales Azure-Portal (Appliance) |
 | **CLI-Verwaltung** | PowerShell | Azure CLI, Azure PowerShell, PowerShell | Azure CLI + PowerShell (lokal) |
-| **Infrastructure as Code** | PowerShell DSC, manuell | ARM-Templates, Bicep, Terraform (AzureRM) | ARM-Templates, Azure CLI (lokal) |
-| **Rollenbasierte Zugriffskontrolle** | Active Directory, lokale Gruppenrichtlinien | Azure RBAC via Entra ID | Azure RBAC (lokal, ohne Entra ID) |
+| **Infrastructure as Code** | PowerShell [DSC](glossar.md#dsc-desired-state-configuration), manuell | [ARM](glossar.md#arm-azure-resource-manager)-Templates, [Bicep](glossar.md#bicep), Terraform (AzureRM) | ARM-Templates, Azure CLI (lokal) |
+| **Rollenbasierte Zugriffskontrolle** | Active Directory, lokale Gruppenrichtlinien | Azure [RBAC](glossar.md#rbac-role-based-access-control) via [Entra ID](glossar.md#entra-id-ehemals-azure-active-directory--azure-ad) | Azure RBAC (lokal, ohne Entra ID) |
 | **Managed Identity** | Nicht verfügbar | System-assigned Managed Identity | System-assigned Managed Identity |
 | **Identitätsprovider** | Active Directory | Azure Entra ID + Active Directory | Lokale Identitätsverwaltung + Active Directory |
 | **Ressourcenmodell** | Windows-basiert (Cluster, Nodes, Volumes) | Azure Resource Manager (Subscriptions, Resource Groups) | Azure Resource Manager (lokal) |
@@ -144,15 +144,15 @@ Pendants ersetzt:
 | Funktion | HCI On-Premises (Windows Server) | Azure Local (Connected) | Azure Local (Isolated) |
 |---|---|---|---|
 | **Virtuelle Maschinen** | Hyper-V VMs | Azure Arc VMs (Azure-verwaltete VMs) | Azure Local VMs (lokal verwaltet) |
-| **Container / Kubernetes** | Nicht nativ integriert | AKS enabled by Arc | AKS enabled by Arc (Preview) |
+| **Container / Kubernetes** | Nicht nativ integriert | [AKS](glossar.md#aks-azure-kubernetes-service) enabled by Arc | AKS enabled by Arc (Preview) |
 | **Container Registry** | Nicht verfügbar | Azure Container Registry (Cloud) | Azure Container Registry (lokal) |
 | **Secret Management** | Kein zentraler Dienst | Azure Key Vault (Cloud) | Azure Key Vault (lokal) |
 | **Policy Enforcement** | Group Policy, manuell | Azure Policy | Azure Policy (lokal) |
 | **Arc-enabled Servers** | Nicht verfügbar | VM-Gast-Management über Arc | VM-Gast-Management über Arc (lokal) |
 | **AI / ML Workloads** | Nicht nativ unterstützt | AI-Workloads über AKS + GPU VMs | Disconnected AI Containers über AKS |
 | **Azure Marketplace** | Nicht verfügbar | VM-Images, Extensions aus Marketplace | Nicht verfügbar (Offline-Import) |
-| **Backup** | Windows Server Backup, DPM, Drittanbieter | Azure Backup, Azure Site Recovery | Keine Azure-Backup-Integration |
-| **Security** | Windows Defender, SCOM | Microsoft Defender for Cloud, Sentinel | Kein Defender for Cloud |
+| **Backup** | Windows Server Backup, [DPM](glossar.md#dpm-data-protection-manager), Drittanbieter | Azure Backup, Azure Site Recovery | Keine Azure-Backup-Integration |
+| **Security** | Windows Defender, [SCOM](glossar.md#scom-system-center-operations-manager) | Microsoft Defender for Cloud, Sentinel | Kein Defender for Cloud |
 
 ## Storage und Resilienz
 
@@ -161,17 +161,17 @@ Pendants ersetzt:
 | **Storage-Technologie** | Storage Spaces Direct | Storage Spaces Direct (identisch) | Storage Spaces Direct (identisch) |
 | **Compute-Technologie** | Hyper-V | Hyper-V (identisch) | Hyper-V (identisch) |
 | **Resilienz-Optionen** | Mirror, Parity, Mixed | Mirror, Parity, Mixed (identisch) | Mirror, Parity, Mixed (identisch) |
-| **Fault Domain Awareness** | Node, Chassis, Rack, Site | Node, Chassis, Rack, Site (identisch) | Node, Chassis, Rack, Site (identisch) |
+| **Fault Domain Awareness** | [Node, Chassis, Rack, Site](glossar.md#fault-domain--fault-domain-awareness) | Node, Chassis, Rack, Site (identisch) | Node, Chassis, Rack, Site (identisch) |
 | **Max. Knotenzahl** | 16 (Windows Server) | 16 | 16 |
-| **Dateisystem** | ReFS | ReFS | ReFS |
+| **Dateisystem** | [ReFS](glossar.md#refs-resilient-file-system) | ReFS | ReFS |
 
 ## Netzwerk und Konnektivität
 
 | Funktion | HCI On-Premises (Windows Server) | Azure Local (Connected) | Azure Local (Isolated) |
 |---|---|---|---|
-| **Cloud-Verbindung** | Nicht erforderlich | **Erforderlich** (max. 30 Tage offline) | **Nicht erforderlich** (Air-Gap-fähig) |
-| **RDMA-Support** | iWARP, RoCE | iWARP, RoCE (identisch) | iWARP, RoCE (identisch) |
-| **Netzwerk-Anforderungen** | 10/25/100 GbE | 10/25/100 GbE (identisch) | 10/25/100 GbE (identisch) |
+| **Cloud-Verbindung** | Nicht erforderlich | **Erforderlich** (max. 30 Tage offline) | **Nicht erforderlich** ([Air-Gap](glossar.md#air-gap)-fähig) |
+| **RDMA-Support** | [iWARP](glossar.md#iwarp-internet-wide-area-rdma-protocol), [RoCE](glossar.md#roce-rdma-over-converged-ethernet) | iWARP, RoCE (identisch) | iWARP, RoCE (identisch) |
+| **Netzwerk-Anforderungen** | 10/25/100 [GbE](glossar.md#gbe-gigabit-ethernet) | 10/25/100 GbE (identisch) | 10/25/100 GbE (identisch) |
 | **Azure-Endpunkte** | Keine | Firewall-Freigabe für Azure-Endpunkte erforderlich | Keine externen Endpunkte |
 | **SDN (Software Defined Networking)** | Network Controller optional (ab WS2016) | Network Controller, SDN Load Balancer | Network Controller, SDN Load Balancer |
 
@@ -179,7 +179,7 @@ Pendants ersetzt:
 
 | Funktion | HCI On-Premises (Windows Server) | Azure Local (Connected) | Azure Local (Isolated) |
 |---|---|---|---|
-| **Update-Mechanismus** | WSUS, SCCM, manuell | Azure Update Manager (Cloud-gesteuert) | Monatliche Offline-Update-Pakete |
+| **Update-Mechanismus** | [WSUS](glossar.md#wsus-windows-server-update-services), [SCCM](glossar.md#sccm--mecm-system-center-configuration-manager--microsoft-endpoint-configuration-manager), manuell | Azure Update Manager (Cloud-gesteuert) | Monatliche Offline-Update-Pakete |
 | **Update-Umfang** | OS + Treiber separat | OS, Firmware, Treiber, Agents koordiniert | Appliance + Azure Local + AKS + Agents in einem Paket |
 | **Lifecycle Management** | Manuell / SCCM | Azure Portal + Cloud-Orchestrierung | Über lokale Steuerungsebene |
 | **Node-Management** | Failover Cluster Manager / PowerShell | Azure Portal (Nodes hinzufügen/entfernen) | Lokales Portal (Nodes hinzufügen/entfernen) |
@@ -193,13 +193,13 @@ Pendants ersetzt:
 | **Cloud-Monitoring** | Nicht verfügbar | Azure Monitor, Log Analytics, Insights | Nicht verfügbar (kein Cloud-Zugang) |
 | **On-Premises-Monitoring** | SCOM, Prometheus (manuell) | SCOM, Azure Monitor Agent | SCOM, Prometheus + Grafana für AKS |
 | **Alerting** | SCOM-Regeln, manuell | Azure Monitor Alerts, Action Groups | SCOM-Regeln, manuell |
-| **Telemetrie** | Optional (CEIP) | Azure-Telemetrie (erforderlich) | Keine Cloud-Telemetrie |
+| **Telemetrie** | Optional ([CEIP](glossar.md#ceip-customer-experience-improvement-program)) | Azure-Telemetrie (erforderlich) | Keine Cloud-Telemetrie |
 
 ## Lizenzierung und Kosten
 
 | Funktion | HCI On-Premises (Windows Server) | Azure Local (Connected) | Azure Local (Isolated) |
 |---|---|---|---|
-| **Lizenzmodell** | Windows Server Datacenter (pro Kern) | Azure-Abonnement (monatlich pro physischem Kern) | MCA-E-Vertrag + Azure-Abonnement |
+| **Lizenzmodell** | Windows Server Datacenter (pro Kern) | Azure-Abonnement (monatlich pro physischem Kern) | [MCA-E](glossar.md#mca-e-microsoft-customer-agreement-for-enterprises)-Vertrag + Azure-Abonnement |
 | **Zugangsbeschränkung** | Keine | Keine | Qualifizierungsprozess + Business Need |
 | **Software Assurance** | Optional (empfohlen) | Nicht erforderlich (Azure-Abo) | Nicht erforderlich (Azure-Abo) |
 | **Azure Hybrid Benefit** | Nicht anwendbar | Ja — Windows Server SA anrechenbar | Ja — Windows Server SA anrechenbar |
@@ -268,7 +268,7 @@ Verfügung [^2]:
 Organisationen mit mehreren Standorten können alle Azure
 Local Cluster über ein einziges Azure Portal verwalten —
 unabhängig vom physischen Standort. Dies ermöglicht
-einheitliche Governance, RBAC und Policy-Durchsetzung
+einheitliche Governance, [RBAC](glossar.md#rbac-role-based-access-control) und Policy-Durchsetzung
 über die gesamte Infrastruktur [^2].
 
 ### Azure Kubernetes Service (AKS)
@@ -301,20 +301,20 @@ Plattformdienste lokal zur Verfügung [^3]:
   Verwaltung von Container-Images
 - **Azure Key Vault**: Zentrales Secret Management
 - **Azure Policy**: Durchsetzung von Governance-Standards
-- **RBAC**: Granulare Zugriffskontrolle auf
+- **[RBAC](glossar.md#rbac-role-based-access-control)**: Granulare Zugriffskontrolle auf
   Subscription-/Resource-Group-Ebene
 
 ### Datensouveränität und Compliance
 
 Disconnected Operations ermöglichen den Betrieb in
-vollständig isolierten Netzwerken (Air-Gap). Daten,
+vollständig isolierten Netzwerken ([Air-Gap](glossar.md#air-gap)). Daten,
 Steuerungsebene und Verwaltung verbleiben innerhalb der
 physischen und rechtlichen Grenzen der Organisation [^3][^4].
 Dies adressiert:
 
 - **Datensouveränität**: Keine Daten verlassen die
   Organisationsgrenze
-- **Regulatorische Anforderungen**: DSGVO, KRITIS, VS-NfD und
+- **Regulatorische Anforderungen**: [DSGVO](glossar.md#dsgvo-datenschutz-grundverordnung), [KRITIS](glossar.md#kritis-kritische-infrastrukturen), [VS-NfD](glossar.md#vs-nfd-verschlusssache--nur-für-den-dienstgebrauch) und
   branchenspezifische Vorschriften
 - **Angriffsfläche**: Reduktion durch fehlende externe
   Netzwerkverbindungen
@@ -354,7 +354,7 @@ Mindestanforderungen [^3]:
 ## Lizenzierung und Zugang
 
 - Erfordert ein **Microsoft Customer Agreement for
-  Enterprises (MCA-E)** oder gleichwertiges Abkommen
+  Enterprises ([MCA-E](glossar.md#mca-e-microsoft-customer-agreement-for-enterprises))** oder gleichwertiges Abkommen
 - Ein begründeter **Business Need** für den
   Disconnected-Betrieb muss nachgewiesen werden
 - Zugang erfolgt über einen Qualifizierungsprozess mit dem
@@ -363,7 +363,7 @@ Mindestanforderungen [^3]:
 ## Eingeschränktes Monitoring
 
 Azure Monitor steht im Disconnected-Modus nicht zur
-Verfügung. Monitoring erfolgt über SCOM (Management Packs)
+Verfügung. Monitoring erfolgt über [SCOM](glossar.md#scom-system-center-operations-manager) (Management Packs)
 oder Drittanbieter-Lösungen wie Prometheus und Grafana [^4].
 
 ## Zertifizierte Hardware
@@ -417,7 +417,7 @@ nicht qualifiziert [^3].
 - **AI-Inferencing**: Disconnected AI Containers
 - **Azure-Konsistenz**: Einheitliches Management über
   verbundene und isolierte Standorte hinweg
-- **Datensouveränität**: DSGVO, KRITIS, VS-NfD und
+- **Datensouveränität**: [DSGVO](glossar.md#dsgvo-datenschutz-grundverordnung), [KRITIS](glossar.md#kritis-kritische-infrastrukturen), [VS-NfD](glossar.md#vs-nfd-verschlusssache--nur-für-den-dienstgebrauch) und
   branchenspezifische Vorschriften erfordern vollständige
   Datenisolation
 
